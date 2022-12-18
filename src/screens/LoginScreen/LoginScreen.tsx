@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { CustomButton } from '../../components/CustomButton';
 import { CustomInput } from '../../components/CustomInput/CustomInput';
+import { User } from '../../types/User';
 import { users } from '../../users';
 
 type Props = {
@@ -16,7 +17,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const screenHeight = Dimensions.get('window').height;
 
   const handlePressButton = () => {
-    const foundUser = users.find(user => user.email === email) || null;
+    const foundUser: User | null =
+      users.find(user => user.email === email) || null;
 
     if (!foundUser) {
       Alert.alert('', "User with this email doesn't exist", [{ text: 'Ok' }], {

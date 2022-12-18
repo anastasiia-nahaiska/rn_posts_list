@@ -17,6 +17,7 @@ export const CustomButton: React.FC<Props> = ({
     <TouchableOpacity
       onPress={handlePressButton}
       style={[styles.appButtonContainer, { opacity: disabled ? 0 : 1 }]}
+      disabled={disabled}
     >
       <Text style={[styles.appButtonText]}>{title}</Text>
     </TouchableOpacity>
