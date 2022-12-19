@@ -6,6 +6,7 @@ import {
   FlatList,
   ListRenderItem,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -27,6 +28,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number>(0);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const loadPosts = async () => {
     try {
@@ -51,6 +53,12 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     loadPosts();
+  }, []);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await loadPosts();
+    setRefreshing(false);
   }, []);
 
   const onPostPressed = (postId: number) => {
@@ -90,6 +98,9 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
           data={posts}
           renderItem={renderItem}
           keyExtractor={item => `${item.id}`}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       )}
 

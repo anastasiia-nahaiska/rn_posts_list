@@ -1,5 +1,6 @@
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import React, { useState } from 'react';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+
 import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { CustomButton } from '../../components/CustomButton';
 import { CustomInput } from '../../components/CustomInput/CustomInput';

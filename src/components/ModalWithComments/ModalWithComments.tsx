@@ -5,6 +5,7 @@ import {
   Dimensions,
   FlatList,
   Modal,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -28,8 +29,15 @@ export const ModalWithComments: React.FC<Props> = ({
 }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const screenHeight = Dimensions.get('window').height;
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await loadComments();
+    setRefreshing(false);
+  }, []);
 
   const handleAutomaticlyClosing = () => {
     setTimeout(() => {
@@ -83,6 +91,9 @@ export const ModalWithComments: React.FC<Props> = ({
               renderItem={PostComment}
               keyExtractor={item => `${item.id}`}
               showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             />
           )}
         </TouchableOpacity>
