@@ -4,15 +4,18 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  ListRenderItem,
+  Pressable,
   SafeAreaView,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
 
 import { getPosts } from '../../api';
+import { ModalWithComments } from '../../components/ModalWithComments';
 import { Header } from '../../components/Header';
-import { UserPost } from '../../components/UserPost';
 import { Post } from '../../types/Post';
 
 type Props = {
@@ -21,10 +24,14 @@ type Props = {
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<number>(0);
 
   const loadPosts = async () => {
     try {
+      setIsLoading(true);
+
       const postsFromServer = await getPosts();
 
       setPosts(postsFromServer);
@@ -38,9 +45,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         },
       });
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
     }
   };
 
@@ -48,9 +53,29 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     loadPosts();
   }, []);
 
+  const onPostPressed = (postId: number) => {
+    setIsModalVisible(true);
+    setSelectedPostId(postId);
+  };
+
+  const onModalClosed = () => {
+    setIsModalVisible(false);
+  };
+
   const handleLogOut = () => {
     navigation.navigate('LoginScreen');
   };
+
+  const renderItem: ListRenderItem<Post> = ({ item: post }) => (
+    <Pressable style={styles.post} onPress={() => onPostPressed(post.id)}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>{post.title}</Text>
+      </View>
+      <View style={styles.postTextContainer}>
+        <Text style={styles.postText}>{post.body}</Text>
+      </View>
+    </Pressable>
+  );
 
   return (
     <SafeAreaView style={styles.root}>
@@ -63,8 +88,16 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
       ) : (
         <FlatList
           data={posts}
-          renderItem={UserPost}
+          renderItem={renderItem}
           keyExtractor={item => `${item.id}`}
+        />
+      )}
+
+      {selectedPostId > 0 && (
+        <ModalWithComments
+          isModalVisible={isModalVisible}
+          postId={selectedPostId}
+          onModalClosed={onModalClosed}
         />
       )}
     </SafeAreaView>
@@ -81,5 +114,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  post: {
+    padding: '5%',
+    marginTop: '5%',
+    marginHorizontal: '5%',
+
+    borderRadius: 40,
+    backgroundColor: '#FFF',
+  },
+  titleContainer: {
+    paddingVertical: '5%',
+    borderBottomWidth: 1,
+    borderBottomColor: '#905BFF',
+  },
+  titleText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  postTextContainer: {
+    paddingVertical: '5%',
+  },
+  postText: {
+    textAlign: 'justify',
   },
 });

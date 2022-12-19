@@ -1,25 +1,20 @@
 import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 type Props = {
   handleLogOut: () => void;
 };
 
-export const Header: React.FC<Props> = ({ handleLogOut }) => (
+export const Header: React.FC<Props> = React.memo(({ handleLogOut }) => (
   <View style={styles.root}>
-    <Pressable onPress={handleLogOut}>
+    <TouchableOpacity onPress={handleLogOut}>
       <Text style={styles.innerText}>Log out</Text>
-    </Pressable>
+    </TouchableOpacity>
   </View>
-);
+));
 
 const styles = StyleSheet.create({
   root: {
-    // position: 'absolute',
-    // top: 0,
-    // right: 0,
-    // left: 0,
-    // zIndex: 1,
     padding: '7%',
 
     borderBottomStartRadius: 20,
