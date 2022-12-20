@@ -8,21 +8,14 @@ import { RootStackParamList } from '../types/RootStackParamList';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-type Props = {
-  isConnected: boolean | null;
-};
-
-export const Navigation: React.FC<Props> = ({ isConnected }) => {
-  console.warn(isConnected);
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName="LoginScreen"
-      >
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
+export const Navigation: React.FC = () => (
+  <NavigationContainer>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="LoginScreen"
+    >
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);

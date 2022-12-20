@@ -11,9 +11,9 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
-import { Navigation } from './src/navigation';
+import { Navigation } from './navigation';
 import { useEffect } from 'react';
-import { NetInfoContext } from './src/context/NetInfoContext';
+import { ConnectionInfoContext } from './context/ConnectionInfoContext';
 
 export const App = () => {
   const [isConnected, setIsConnected] = useState<boolean | null>(false);
@@ -33,15 +33,15 @@ export const App = () => {
   }, []);
 
   return (
-    <NetInfoContext.Provider value={{ isConnected, setIsConnected }}>
+    <ConnectionInfoContext.Provider value={{ isConnected, setIsConnected }}>
       <SafeAreaView style={styles.root}>
         {!isConnected && (
           <Text style={styles.connectionMessage}>No Internet connection</Text>
         )}
 
-        <Navigation isConnected={isConnected} />
+        <Navigation />
       </SafeAreaView>
-    </NetInfoContext.Provider>
+    </ConnectionInfoContext.Provider>
   );
 };
 

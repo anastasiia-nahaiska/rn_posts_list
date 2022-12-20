@@ -15,20 +15,18 @@ export const CustomInput: React.FC<Props> = ({
   placeholder,
   secureTextEntry = false,
   keyboardType = 'default',
-}) => {
-  return (
-    <View style={styles.container}>
-      <TextInput
-        value={value}
-        onChangeText={newText => onChangeText(newText)}
-        placeholder={placeholder}
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-        style={styles.innerText}
-      />
-    </View>
-  );
-};
+}) => (
+  <View style={styles.container}>
+    <TextInput
+      value={value}
+      onChangeText={newText => onChangeText(newText)}
+      placeholder={placeholder}
+      secureTextEntry={secureTextEntry}
+      keyboardType={keyboardType}
+      style={styles.innerText}
+    />
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -21,7 +21,7 @@ import { Post } from '../../types/Post';
 import { RootStackParamList } from '../../types/RootStackParamList';
 import { saveOnDevice } from '../../helpers/saveDataOnDevice';
 import { getDataFromDevice } from '../../helpers/readDataFromDevice';
-import { NetInfoContext } from '../../context/NetInfoContext';
+import { ConnectionInfoContext } from '../../context/ConnectionInfoContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
 
@@ -31,7 +31,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number>(0);
   const [refreshing, setRefreshing] = React.useState(false);
-  const { isConnected } = useContext(NetInfoContext);
+  const { isConnected } = useContext(ConnectionInfoContext);
 
   const fileName = 'posts.json';
   const filePath = `${Dirs.DocumentDir}/${fileName}`;
