@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import React, { useCallback, useMemo, useState } from 'react';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { CustomButton } from '../../components/CustomButton';
 import { CustomInput } from '../../components/CustomInput/CustomInput';
 import { User } from '../../types/User';
 import { users } from '../../users';
+import { RootStackParamList } from '../../types/RootStackParamList';
 
-type Props = {
-  navigation: NavigationProp<ParamListBase>;
-};
+type Props = NativeStackScreenProps<RootStackParamList, 'LoginScreen'>;
 
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPasswors] = useState('');
+  const [password, setPassword] = useState('');
 
-  const screenHeight = Dimensions.get('window').height;
+  const screenHeight = useMemo(() => Dimensions.get('window').height, []);
+  const isButtonHidden = !email.length || !password.length;
 
-  const handlePressButton = () => {
+  const handlePressButton = useCallback(() => {
     const foundUser: User | null =
       users.find(user => user.email === email) || null;
 
@@ -38,16 +38,14 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     navigation.navigate('HomeScreen');
-  };
-
-  const isButtonHidden = !email.length || !password.length;
+  }, [email, navigation, password]);
 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.root}
     >
-      <View style={[styles.loginForm, { height: screenHeight * 0.4 }]}>
+      <View style={[styles.loginForm, { height: screenHeight * 0.6 }]}>
         <View>
           <CustomInput
             value={email}
@@ -58,7 +56,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
           <CustomInput
             value={password}
-            onChangeText={setPasswors}
+            onChangeText={setPassword}
             placeholder="Password"
             secureTextEntry={true}
           />
@@ -83,6 +81,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#161827',
   },
   loginForm: {
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    paddingHorizontal: '5%',
+    borderRadius: 20,
+    backgroundColor: '#905BFF',
   },
 });

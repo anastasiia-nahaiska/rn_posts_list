@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -12,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
+
 import { getComments } from '../../api';
 import { Comment } from '../../types/Comment';
 import { PostComment } from '../PostComment';
@@ -29,23 +29,17 @@ export const ModalWithComments: React.FC<Props> = ({
 }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const screenHeight = Dimensions.get('window').height;
+  const screenHeight = useMemo(() => Dimensions.get('window').height, []);
 
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    await loadComments();
-    setRefreshing(false);
-  }, []);
-
-  const handleAutomaticlyClosing = () => {
+  const handleAutomaticlyClosing = useCallback(() => {
     setTimeout(() => {
       onModalClosed();
     }, 1500);
-  };
+  }, [onModalClosed]);
 
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     try {
       setIsLoading(true);
       const commentsFromServer = await getComments(postId);
@@ -60,11 +54,18 @@ export const ModalWithComments: React.FC<Props> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [postId, handleAutomaticlyClosing]);
 
   useEffect(() => {
     loadComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await loadComments();
+    setRefreshing(false);
+  }, [loadComments]);
 
   return (
     <Modal animationType="fade" visible={isModalVisible} transparent={true}>

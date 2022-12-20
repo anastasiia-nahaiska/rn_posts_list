@@ -8,22 +8,19 @@
  * @format
  */
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { Navigation } from './src/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { NetInfoContext } from './src/context/NetInfoContext';
 
 export const App = () => {
-  const [isConnected, setIsConnected] = useState<boolean | null>(true);
+  const [isConnected, setIsConnected] = useState<boolean | null>(false);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
-      if (state.isConnected && state.isInternetReachable) {
-        setIsConnected(true);
-      } else {
-        setIsConnected(false);
-      }
+      setIsConnected(state.isConnected);
     });
 
     NetInfo.fetch().then(state => {
@@ -36,13 +33,15 @@ export const App = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.root}>
-      {!isConnected && (
-        <Text style={styles.connectionMessage}>No Internet connection</Text>
-      )}
+    <NetInfoContext.Provider value={{ isConnected, setIsConnected }}>
+      <SafeAreaView style={styles.root}>
+        {!isConnected && (
+          <Text style={styles.connectionMessage}>No Internet connection</Text>
+        )}
 
-      <Navigation />
-    </SafeAreaView>
+        <Navigation isConnected={isConnected} />
+      </SafeAreaView>
+    </NetInfoContext.Provider>
   );
 };
 

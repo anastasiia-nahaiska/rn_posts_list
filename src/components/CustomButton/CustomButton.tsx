@@ -29,9 +29,9 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     width: '100%',
 
-    backgroundColor: '#905BFF',
+    backgroundColor: '#161827',
     borderRadius: 40,
-    elevation: 8,
+    elevation: 10,
   },
   appButtonText: {
     alignSelf: 'center',

@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,16 +10,20 @@ import {
   Text,
   View,
 } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Snackbar from 'react-native-snackbar';
+import { Dirs } from 'react-native-file-access';
 
 import { getPosts } from '../../api';
 import { ModalWithComments } from '../../components/ModalWithComments';
 import { Header } from '../../components/Header';
 import { Post } from '../../types/Post';
+import { RootStackParamList } from '../../types/RootStackParamList';
+import { saveOnDevice } from '../../helpers/saveDataOnDevice';
+import { getDataFromDevice } from '../../helpers/readDataFromDevice';
+import { NetInfoContext } from '../../context/NetInfoContext';
 
-type Props = {
-  navigation: NavigationProp<ParamListBase>;
-};
+type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -29,14 +31,19 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number>(0);
   const [refreshing, setRefreshing] = React.useState(false);
+  const { isConnected } = useContext(NetInfoContext);
 
-  const loadPosts = async () => {
+  const fileName = 'posts.json';
+  const filePath = `${Dirs.DocumentDir}/${fileName}`;
+
+  const loadPosts = useCallback(async () => {
     try {
       setIsLoading(true);
 
       const postsFromServer = await getPosts();
 
       setPosts(postsFromServer);
+      saveOnDevice(filePath, postsFromServer);
     } catch (error) {
       Snackbar.show({
         text: 'Opss... Can not load posts',
@@ -49,40 +56,54 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filePath]);
+
+  const readPostsFromDevice = useCallback(async () => {
+    const postsFromDevice: Post[] = await getDataFromDevice(filePath);
+
+    setPosts(postsFromDevice);
+  }, [filePath]);
 
   useEffect(() => {
-    loadPosts();
+    if (!isConnected) {
+      readPostsFromDevice();
+    } else {
+      loadPosts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await loadPosts();
     setRefreshing(false);
-  }, []);
+  }, [loadPosts]);
 
-  const onPostPressed = (postId: number) => {
+  const onPostPressed = useCallback((postId: number) => {
     setIsModalVisible(true);
     setSelectedPostId(postId);
-  };
+  }, []);
 
-  const onModalClosed = () => {
+  const onModalClosed = useCallback(() => {
     setIsModalVisible(false);
-  };
+  }, []);
 
-  const handleLogOut = () => {
+  const handleLogOut = useCallback(() => {
     navigation.navigate('LoginScreen');
-  };
+  }, [navigation]);
 
-  const renderItem: ListRenderItem<Post> = ({ item: post }) => (
-    <Pressable style={styles.post} onPress={() => onPostPressed(post.id)}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>{post.title}</Text>
-      </View>
-      <View style={styles.postTextContainer}>
-        <Text style={styles.postText}>{post.body}</Text>
-      </View>
-    </Pressable>
+  const renderItem: ListRenderItem<Post> = useCallback(
+    ({ item: post }) => (
+      <Pressable style={styles.post} onPress={() => onPostPressed(post.id)}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>{post.title}</Text>
+        </View>
+        <View style={styles.postTextContainer}>
+          <Text style={styles.postText}>{post.body}</Text>
+        </View>
+      </Pressable>
+    ),
+    [onPostPressed],
   );
 
   return (

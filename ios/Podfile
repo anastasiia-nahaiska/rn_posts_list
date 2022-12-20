@@ -31,6 +31,8 @@ target 'RN_posts_list' do
     # Pods for testing
   end
 
+  pod 'react-native-file-access', :path => '../node_modules/react-native-file-access'
+
   post_install do |installer|
     react_native_post_install(
       installer,

@@ -6,6 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import { Comment } from '../../types/Comment';
 
 export const PostComment: ListRenderItem<Comment> = ({ item: comment }) => (
