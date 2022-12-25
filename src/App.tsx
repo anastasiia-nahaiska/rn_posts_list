@@ -8,40 +8,21 @@
  * @format
  */
 
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { Navigation } from './navigation';
-import { useEffect } from 'react';
-import { ConnectionInfoContext } from './context/ConnectionInfoContext';
+import { ConnectionInfoContextProvider } from './context/ConnectionInfoContext';
+import { ConnectionInfo } from './components/ConnectionInfo';
 
 export const App = () => {
-  const [isConnected, setIsConnected] = useState<boolean | null>(false);
-
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected);
-    });
-
-    NetInfo.fetch().then(state => {
-      setIsConnected(state.isConnected);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
   return (
-    <ConnectionInfoContext.Provider value={{ isConnected, setIsConnected }}>
+    <ConnectionInfoContextProvider>
       <SafeAreaView style={styles.root}>
-        {!isConnected && (
-          <Text style={styles.connectionMessage}>No Internet connection</Text>
-        )}
+        <ConnectionInfo />
 
         <Navigation />
       </SafeAreaView>
-    </ConnectionInfoContext.Provider>
+    </ConnectionInfoContextProvider>
   );
 };
 
@@ -50,11 +31,5 @@ const styles = StyleSheet.create({
     flex: 1,
 
     backgroundColor: '#161827',
-  },
-  connectionMessage: {
-    padding: '5%',
-    textAlign: 'center',
-    fontSize: 16,
-    color: '#FFF',
   },
 });
