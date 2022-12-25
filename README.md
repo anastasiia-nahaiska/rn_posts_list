@@ -18,3 +18,8 @@ Node - 18.12.1
 NPM - 8.19.2
 React Native - 0.70
 ```
+Extra used libraries:
+- react-native-snackbar - https://www.npmjs.com/package/react-native-snackbar;
+- react-native-netinfo - https://github.com/react-native-netinfo/react-native-netinfo;
+- react-native-file-access - https://github.com/alpha0010/react-native-file-access;
+- @react-navigation/native - https://reactnative.dev/docs/navigation;
