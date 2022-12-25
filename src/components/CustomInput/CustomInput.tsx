@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { KeyboardTypeOptions, StyleSheet, TextInput, View } from 'react-native';
 
 type Props = {
+  children?: ReactNode;
   value: string;
   onChangeText: (next: string) => void;
   placeholder: string;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export const CustomInput: React.FC<Props> = ({
+  children = null,
   value,
   onChangeText,
   placeholder,
@@ -25,11 +27,15 @@ export const CustomInput: React.FC<Props> = ({
       keyboardType={keyboardType}
       style={styles.innerText}
     />
+    {children}
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     alignSelf: 'center',
     paddingVertical: 10,
     paddingHorizontal: 20,

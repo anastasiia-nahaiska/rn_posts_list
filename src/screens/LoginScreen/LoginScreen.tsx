@@ -1,7 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { CustomButton } from '../../components/CustomButton';
 import { CustomInput } from '../../components/CustomInput/CustomInput';
 import { User } from '../../types/User';
@@ -13,6 +21,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'LoginScreen'>;
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
   const screenHeight = useMemo(() => Dimensions.get('window').height, []);
   const isButtonHidden = !email.length || !password.length;
@@ -40,6 +49,14 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('HomeScreen');
   }, [email, navigation, password]);
 
+  const handlePasswordVisibility = () => {
+    setIsPasswordVisible(state => !state);
+  };
+
+  const icon = isPasswordVisible
+    ? require('../../images/eye-off.png')
+    : require('../../images/eye.png');
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -58,8 +75,12 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             placeholder="Password"
-            secureTextEntry={true}
-          />
+            secureTextEntry={isPasswordVisible}
+          >
+            <Pressable onPress={handlePasswordVisibility}>
+              <Image source={icon} style={styles.icon} />
+            </Pressable>
+          </CustomInput>
         </View>
 
         <CustomButton
@@ -85,5 +106,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: '5%',
     borderRadius: 20,
     backgroundColor: '#905BFF',
+  },
+  icon: {
+    width: 30,
+    height: 20,
   },
 });
